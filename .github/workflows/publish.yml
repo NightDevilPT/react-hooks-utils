@@ -1,0 +1,66 @@
+name: Publish to npm
+
+# This workflow runs when code is merged to main branch
+# It runs all quality checks and publishes to npm
+
+on:
+  push:
+    branches:
+      - main  # Triggers when PR is merged to main
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test
+      
+      - name: Run linter
+        run: npm run lint
+      
+      - name: Type check
+        run: npm run type-check
+      
+      - name: Format check
+        run: npm run format:check
+      
+      - name: Build package
+        run: npm run build
+      
+      - name: Check if version exists on npm
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Checking if version $CURRENT_VERSION exists on npm..."
+          
+          # Check if version exists
+          if npm view react-hooks-core@$CURRENT_VERSION version > /dev/null 2>&1; then
+            echo "❌ ERROR: Version $CURRENT_VERSION already exists on npm!"
+            echo "Please update the version in package.json before merging to main."
+            exit 1
+          else
+            echo "✅ Version $CURRENT_VERSION is new. Proceeding to publish..."
+          fi
+      
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
