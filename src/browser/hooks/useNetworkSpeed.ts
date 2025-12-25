@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
-import type { NetworkSpeedInfo, UseNetworkSpeedOptions } from '../interface'
+import type { INetworkSpeed, INetworkSpeedOptions } from '../interface'
 
 /**
  * Monitors network connection speed and type
- * 
- * @param {UseNetworkSpeedOptions} options - Optional configuration
- * @returns {NetworkSpeedInfo} Network speed information
+ *
+ * @param {INetworkSpeedOptions} options - Optional configuration
+ * @returns {INetworkSpeed} Network speed information
  */
-export function useNetworkSpeed(options?: UseNetworkSpeedOptions): NetworkSpeedInfo {
+export function useNetworkSpeed(options?: INetworkSpeedOptions): INetworkSpeed {
   const { onChange } = options || {}
-  
-  const [networkInfo, setNetworkInfo] = useState<NetworkSpeedInfo>(() => {
+
+  const [networkInfo, setNetworkInfo] = useState<INetworkSpeed>(() => {
     if (typeof window === 'undefined' || !('connection' in navigator)) {
       return {
         effectiveType: 'unknown',
@@ -19,12 +19,13 @@ export function useNetworkSpeed(options?: UseNetworkSpeedOptions): NetworkSpeedI
         saveData: false,
       }
     }
-    
+
     try {
       // @ts-ignore - NetworkInformation is not in TypeScript lib yet
       const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection
-      
+
       return {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         effectiveType: (conn?.effectiveType || 'unknown') as any,
         downlink: conn?.downlink || 0,
         rtt: conn?.rtt || 0,
@@ -42,7 +43,7 @@ export function useNetworkSpeed(options?: UseNetworkSpeedOptions): NetworkSpeedI
   })
 
   const onChangeRef = useRef(onChange)
-  
+
   useEffect(() => {
     onChangeRef.current = onChange
   }, [onChange])
@@ -55,19 +56,20 @@ export function useNetworkSpeed(options?: UseNetworkSpeedOptions): NetworkSpeedI
     try {
       // @ts-ignore - NetworkInformation is not in TypeScript lib yet
       const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection
-      
+
       if (!conn) {
         return
       }
 
       const handleChange = () => {
-        const newInfo: NetworkSpeedInfo = {
+        const newInfo: INetworkSpeed = {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           effectiveType: (conn.effectiveType || 'unknown') as any,
           downlink: conn.downlink || 0,
           rtt: conn.rtt || 0,
           saveData: conn.saveData || false,
         }
-        
+
         setNetworkInfo(newInfo)
         onChangeRef.current?.(newInfo)
       }
@@ -85,4 +87,3 @@ export function useNetworkSpeed(options?: UseNetworkSpeedOptions): NetworkSpeedI
 
   return networkInfo
 }
-

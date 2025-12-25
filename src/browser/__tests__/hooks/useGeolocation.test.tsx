@@ -25,7 +25,7 @@ describe('useGeolocation', () => {
   describe('Initialization', () => {
     it('should start in non-loading state when disabled', () => {
       const { result } = renderHook(() => useGeolocation({ enabled: false }))
-      
+
       expect(result.current.loading).toBe(false)
       expect(result.current.error).toBe(null)
       expect(result.current.coordinates).toBe(null)
@@ -33,7 +33,7 @@ describe('useGeolocation', () => {
 
     it('should start in loading state when enabled', () => {
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       expect(result.current.loading).toBe(true)
       expect(result.current.error).toBe(null)
       expect(result.current.coordinates).toBe(null)
@@ -41,7 +41,7 @@ describe('useGeolocation', () => {
 
     it('should have correct state structure', () => {
       const { result } = renderHook(() => useGeolocation())
-      
+
       expect(result.current).toHaveProperty('loading')
       expect(result.current).toHaveProperty('error')
       expect(result.current).toHaveProperty('coordinates')
@@ -52,35 +52,34 @@ describe('useGeolocation', () => {
     it('should handle SSR (no window)', async () => {
       const originalWindow = global.window
       const originalGeolocation = (navigator as any).geolocation
-      
+
       // @ts-ignore
       delete global.window
       // @ts-ignore
       delete (navigator as any).geolocation
-      
+
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       await waitFor(() => {
         expect(result.current.loading).toBe(false)
         expect(result.current.error).toBeTruthy()
         expect(result.current.error?.message).toContain('not supported')
       })
-      
+
       global.window = originalWindow
       ;(navigator as any).geolocation = originalGeolocation
     })
 
     it('should handle missing geolocation API', () => {
       const originalGeolocation = navigator.geolocation
-      
+
       // @ts-ignore
       delete (navigator as any).geolocation
-      
+
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       expect(result.current.loading).toBe(false)
       expect(result.current.error).toBeTruthy()
-      
       ;(navigator as any).geolocation = originalGeolocation
     })
   })
@@ -90,7 +89,7 @@ describe('useGeolocation', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
           altitude: null,
           altitudeAccuracy: null,
@@ -105,13 +104,13 @@ describe('useGeolocation', () => {
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       await waitFor(() => {
         expect(result.current.loading).toBe(false)
         expect(result.current.error).toBe(null)
         expect(result.current.coordinates).toEqual({
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
           altitude: null,
           altitudeAccuracy: null,
@@ -135,7 +134,7 @@ describe('useGeolocation', () => {
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       await waitFor(() => {
         expect(result.current.loading).toBe(false)
         expect(result.current.error).toBeTruthy()
@@ -149,7 +148,7 @@ describe('useGeolocation', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
           altitude: null,
           altitudeAccuracy: null,
@@ -165,11 +164,11 @@ describe('useGeolocation', () => {
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true, watch: true }))
-      
+
       await waitFor(() => {
         expect(result.current.coordinates).toBeTruthy()
       })
-      
+
       expect(mockGeolocation.watchPosition).toHaveBeenCalled()
       expect(mockGeolocation.getCurrentPosition).not.toHaveBeenCalled()
     })
@@ -190,7 +189,7 @@ describe('useGeolocation', () => {
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       await waitFor(() => {
         expect(result.current.error?.code).toBe(1)
       })
@@ -210,7 +209,7 @@ describe('useGeolocation', () => {
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       await waitFor(() => {
         expect(result.current.error?.code).toBe(2)
       })
@@ -230,7 +229,7 @@ describe('useGeolocation', () => {
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       await waitFor(() => {
         expect(result.current.error?.code).toBe(3)
       })
@@ -238,17 +237,17 @@ describe('useGeolocation', () => {
 
     it('should handle exceptions gracefully', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
-      
+
       mockGeolocation.getCurrentPosition.mockImplementation(() => {
         throw new Error('Geolocation error')
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       expect(result.current.loading).toBe(false)
       expect(result.current.error).toBeTruthy()
       expect(consoleWarnSpy).toHaveBeenCalled()
-      
+
       consoleWarnSpy.mockRestore()
     })
   })
@@ -258,13 +257,13 @@ describe('useGeolocation', () => {
       mockGeolocation.watchPosition.mockImplementation(() => 123)
 
       const { unmount } = renderHook(() => useGeolocation({ enabled: true, watch: true }))
-      
+
       await waitFor(() => {
         expect(mockGeolocation.watchPosition).toHaveBeenCalled()
       })
-      
+
       unmount()
-      
+
       expect(mockGeolocation.clearWatch).toHaveBeenCalledWith(123)
     })
 
@@ -272,7 +271,7 @@ describe('useGeolocation', () => {
       mockGeolocation.getCurrentPosition.mockImplementation(() => {})
 
       const { unmount } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       expect(() => unmount()).not.toThrow()
     })
   })
@@ -283,7 +282,7 @@ describe('useGeolocation', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
           altitude: null,
           altitudeAccuracy: null,
@@ -298,12 +297,14 @@ describe('useGeolocation', () => {
       })
 
       renderHook(() => useGeolocation({ enabled: true, onSuccess }))
-      
+
       await waitFor(() => {
-        expect(onSuccess).toHaveBeenCalledWith(expect.objectContaining({
-          latitude: 40.7128,
-          longitude: -74.0060,
-        }))
+        expect(onSuccess).toHaveBeenCalledWith(
+          expect.objectContaining({
+            latitude: 40.7128,
+            longitude: -74.006,
+          })
+        )
       })
     })
 
@@ -322,7 +323,7 @@ describe('useGeolocation', () => {
       })
 
       renderHook(() => useGeolocation({ enabled: true, onError }))
-      
+
       await waitFor(() => {
         expect(onError).toHaveBeenCalled()
         const errorArg = onError.mock.calls[0][0]
@@ -334,7 +335,7 @@ describe('useGeolocation', () => {
     it('should pass position options to geolocation API', () => {
       mockGeolocation.getCurrentPosition.mockImplementation(() => {})
 
-      renderHook(() => 
+      renderHook(() =>
         useGeolocation({
           enabled: true,
           enableHighAccuracy: true,
@@ -342,7 +343,7 @@ describe('useGeolocation', () => {
           maximumAge: 60000,
         })
       )
-      
+
       expect(mockGeolocation.getCurrentPosition).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
@@ -356,7 +357,7 @@ describe('useGeolocation', () => {
 
     it('should work without options', () => {
       const { result } = renderHook(() => useGeolocation())
-      
+
       expect(result.current).toBeDefined()
       expect(result.current.loading).toBe(false)
     })
@@ -365,7 +366,7 @@ describe('useGeolocation', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
           altitude: null,
           altitudeAccuracy: null,
@@ -379,10 +380,10 @@ describe('useGeolocation', () => {
         success(mockPosition)
       })
 
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useGeolocation({ enabled: true, onSuccess: undefined, onError: undefined })
       )
-      
+
       await waitFor(() => {
         expect(result.current.coordinates).toBeTruthy()
       })
@@ -394,7 +395,7 @@ describe('useGeolocation', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
           altitude: 100,
           altitudeAccuracy: 5,
@@ -409,11 +410,11 @@ describe('useGeolocation', () => {
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       await waitFor(() => {
         expect(result.current.coordinates).toEqual({
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
           altitude: 100,
           altitudeAccuracy: 5,
@@ -427,15 +428,14 @@ describe('useGeolocation', () => {
       mockGeolocation.getCurrentPosition.mockImplementation(() => {})
       mockGeolocation.watchPosition.mockImplementation(() => 123)
 
-      const { rerender } = renderHook(
-        ({ watch }) => useGeolocation({ enabled: true, watch }),
-        { initialProps: { watch: false } }
-      )
-      
+      const { rerender } = renderHook(({ watch }) => useGeolocation({ enabled: true, watch }), {
+        initialProps: { watch: false },
+      })
+
       expect(mockGeolocation.getCurrentPosition).toHaveBeenCalled()
-      
+
       rerender({ watch: true })
-      
+
       expect(mockGeolocation.watchPosition).toHaveBeenCalled()
     })
   })
@@ -445,7 +445,7 @@ describe('useGeolocation', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
           altitude: null,
           altitudeAccuracy: null,
@@ -460,13 +460,14 @@ describe('useGeolocation', () => {
       })
 
       const { result } = renderHook(() => useGeolocation({ enabled: true }))
-      
+
       await waitFor(() => {
         expect(typeof result.current.loading).toBe('boolean')
         expect(result.current.error === null || typeof result.current.error === 'object').toBe(true)
-        expect(result.current.coordinates === null || typeof result.current.coordinates === 'object').toBe(true)
+        expect(
+          result.current.coordinates === null || typeof result.current.coordinates === 'object'
+        ).toBe(true)
       })
     })
   })
 })
-

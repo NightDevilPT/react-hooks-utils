@@ -5,4 +5,3 @@ export { useMediaQuery } from './useMediaQuery'
 export { useNetworkSpeed } from './useNetworkSpeed'
 export { useGeolocation } from './useGeolocation'
 export { useBattery } from './useBattery'
-

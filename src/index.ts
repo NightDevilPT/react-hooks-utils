@@ -1,28 +1,26 @@
 // Export browser feature
-export { 
-  useDeviceDetect, 
-  useOnline, 
-  useIdle, 
+export {
+  useDeviceDetect,
+  useOnline,
+  useIdle,
   useMediaQuery,
   useNetworkSpeed,
   useGeolocation,
-  useBattery
+  useBattery,
 } from './browser'
 
-export type { 
-  DeviceDetectResult, 
-  UseDeviceDetectOptions, 
-  UseOnlineOptions, 
-  UseIdleOptions, 
-  UseMediaQueryOptions,
+export type {
+  IDeviceDetect,
+  IDeviceDetectOptions,
+  IOnlineOptions,
+  IIdleOptions,
+  IMediaQueryOptions,
   ConnectionType,
-  NetworkSpeedInfo,
-  UseNetworkSpeedOptions,
-  GeolocationCoordinates,
-  GeolocationState,
-  UseGeolocationOptions,
-  BatteryStatus,
-  UseBatteryOptions
+  INetworkSpeed,
+  INetworkSpeedOptions,
+  IGeolocationCoordinates,
+  IGeolocation,
+  IGeolocationOptions,
+  IBattery,
+  IBatteryOptions,
 } from './browser'
-
-

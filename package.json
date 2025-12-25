@@ -22,6 +22,11 @@
     "README.md",
     "LICENSE"
   ],
+  "author": "NightDevilPT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NightDevilPT/react-hooks-utils?tab=readme-ov-file"
+  },
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
@@ -30,15 +35,16 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "clean": "rimraf dist",
     "prepublishOnly": "npm run lint && npm run type-check && npm run test && npm run build",
     "pack": "npm run build && npm pack",
     "local-link": "npm run build && npm link",
-    "local-unlink": "npm unlink -g react-hookify"
+    "local-unlink": "npm unlink -g react-hookify",
+    "prepare": "husky"
   },
   "keywords": [
     "react",
@@ -50,7 +56,6 @@
     "device-detection",
     "browser-detection"
   ],
-  "author": "",
   "license": "MIT",
   "peerDependencies": {
     "react": "^19.2.3",
@@ -68,7 +73,10 @@
     "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
     "jest-environment-jsdom": "^30.2.0",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "rimraf": "^6.1.2",
     "ts-jest": "^29.4.6",
@@ -77,5 +85,11 @@
   },
   "dependencies": {
     "jest": "^30.2.0"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   }
 }

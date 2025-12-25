@@ -23,11 +23,10 @@ describe('useBattery', () => {
       }),
       removeEventListener: jest.fn((event: string, handler: Function) => {
         if (listeners[event]) {
-          listeners[event] = listeners[event].filter(l => l !== handler)
+          listeners[event] = listeners[event].filter((l) => l !== handler)
         }
       }),
     }
-
     ;(navigator as any).getBattery = jest.fn().mockResolvedValue(mockBattery)
   })
 
@@ -44,7 +43,7 @@ describe('useBattery', () => {
   describe('Initialization', () => {
     it('should initialize with default unsupported state', () => {
       const { result } = renderHook(() => useBattery())
-      
+
       expect(result.current.level).toBe(1)
       expect(result.current.charging).toBe(false)
       expect(result.current.chargingTime).toBe(Infinity)
@@ -54,7 +53,7 @@ describe('useBattery', () => {
 
     it('should have correct state structure', async () => {
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current).toHaveProperty('level')
         expect(result.current).toHaveProperty('charging')
@@ -68,27 +67,26 @@ describe('useBattery', () => {
   describe('SSR Compatibility', () => {
     it('should handle SSR (no window)', () => {
       const originalWindow = global.window
-      
+
       // @ts-ignore
       delete global.window
-      
+
       const { result } = renderHook(() => useBattery())
-      
+
       expect(result.current.supported).toBe(false)
       expect(result.current.level).toBe(1)
-      
+
       global.window = originalWindow
     })
 
     it('should handle missing getBattery API', () => {
       const originalGetBattery = (navigator as any).getBattery
-      
+
       delete (navigator as any).getBattery
-      
+
       const { result } = renderHook(() => useBattery())
-      
+
       expect(result.current.supported).toBe(false)
-      
       ;(navigator as any).getBattery = originalGetBattery
     })
   })
@@ -96,7 +94,7 @@ describe('useBattery', () => {
   describe('State Updates', () => {
     it('should update with battery status on mount', async () => {
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.level).toBe(0.8)
         expect(result.current.charging).toBe(false)
@@ -108,17 +106,17 @@ describe('useBattery', () => {
 
     it('should update when battery level changes', async () => {
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.supported).toBe(true)
       })
-      
+
       mockBattery.level = 0.5
-      
+
       act(() => {
-        listeners.levelchange.forEach(listener => listener())
+        listeners.levelchange.forEach((listener) => listener())
       })
-      
+
       await waitFor(() => {
         expect(result.current.level).toBe(0.5)
       })
@@ -126,18 +124,18 @@ describe('useBattery', () => {
 
     it('should update when charging status changes', async () => {
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.supported).toBe(true)
       })
-      
+
       mockBattery.charging = true
       mockBattery.chargingTime = 1800
-      
+
       act(() => {
-        listeners.chargingchange.forEach(listener => listener())
+        listeners.chargingchange.forEach((listener) => listener())
       })
-      
+
       await waitFor(() => {
         expect(result.current.charging).toBe(true)
       })
@@ -145,17 +143,17 @@ describe('useBattery', () => {
 
     it('should update when charging time changes', async () => {
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.supported).toBe(true)
       })
-      
+
       mockBattery.chargingTime = 900
-      
+
       act(() => {
-        listeners.chargingtimechange.forEach(listener => listener())
+        listeners.chargingtimechange.forEach((listener) => listener())
       })
-      
+
       await waitFor(() => {
         expect(result.current.chargingTime).toBe(900)
       })
@@ -163,17 +161,17 @@ describe('useBattery', () => {
 
     it('should update when discharging time changes', async () => {
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.supported).toBe(true)
       })
-      
+
       mockBattery.dischargingTime = 1800
-      
+
       act(() => {
-        listeners.dischargingtimechange.forEach(listener => listener())
+        listeners.dischargingtimechange.forEach((listener) => listener())
       })
-      
+
       await waitFor(() => {
         expect(result.current.dischargingTime).toBe(1800)
       })
@@ -183,32 +181,32 @@ describe('useBattery', () => {
   describe('Error Handling', () => {
     it('should handle getBattery errors gracefully', async () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
-      
+
       ;(navigator as any).getBattery = jest.fn().mockRejectedValue(new Error('Battery error'))
-      
+
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.supported).toBe(false)
       })
-      
+
       expect(consoleWarnSpy).toHaveBeenCalled()
       consoleWarnSpy.mockRestore()
     })
 
     it('should handle exceptions in initialization', async () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
-      
+
       ;(navigator as any).getBattery = jest.fn(() => {
         throw new Error('Initialization error')
       })
-      
+
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.supported).toBe(false)
       })
-      
+
       expect(consoleWarnSpy).toHaveBeenCalled()
       consoleWarnSpy.mockRestore()
     })
@@ -217,28 +215,40 @@ describe('useBattery', () => {
   describe('Cleanup', () => {
     it('should remove event listeners on unmount', async () => {
       const { unmount } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(mockBattery.addEventListener).toHaveBeenCalled()
       })
-      
+
       unmount()
-      
+
       await waitFor(() => {
-        expect(mockBattery.removeEventListener).toHaveBeenCalledWith('levelchange', expect.any(Function))
-        expect(mockBattery.removeEventListener).toHaveBeenCalledWith('chargingchange', expect.any(Function))
-        expect(mockBattery.removeEventListener).toHaveBeenCalledWith('chargingtimechange', expect.any(Function))
-        expect(mockBattery.removeEventListener).toHaveBeenCalledWith('dischargingtimechange', expect.any(Function))
+        expect(mockBattery.removeEventListener).toHaveBeenCalledWith(
+          'levelchange',
+          expect.any(Function)
+        )
+        expect(mockBattery.removeEventListener).toHaveBeenCalledWith(
+          'chargingchange',
+          expect.any(Function)
+        )
+        expect(mockBattery.removeEventListener).toHaveBeenCalledWith(
+          'chargingtimechange',
+          expect.any(Function)
+        )
+        expect(mockBattery.removeEventListener).toHaveBeenCalledWith(
+          'dischargingtimechange',
+          expect.any(Function)
+        )
       })
     })
 
     it('should not cause memory leaks', async () => {
       const { unmount } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(mockBattery.addEventListener).toHaveBeenCalled()
       })
-      
+
       expect(() => unmount()).not.toThrow()
     })
   })
@@ -247,28 +257,30 @@ describe('useBattery', () => {
     it('should call onChange callback when battery status changes', async () => {
       const onChange = jest.fn()
       const { result } = renderHook(() => useBattery({ onChange }))
-      
+
       await waitFor(() => {
         expect(result.current.supported).toBe(true)
       })
-      
+
       mockBattery.level = 0.6
-      
+
       act(() => {
-        listeners.levelchange.forEach(listener => listener())
+        listeners.levelchange.forEach((listener) => listener())
       })
-      
+
       await waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith(expect.objectContaining({
-          level: 0.6,
-          supported: true,
-        }))
+        expect(onChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            level: 0.6,
+            supported: true,
+          })
+        )
       })
     })
 
     it('should work without options', async () => {
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current).toBeDefined()
       })
@@ -276,16 +288,16 @@ describe('useBattery', () => {
 
     it('should handle undefined onChange', async () => {
       const { result } = renderHook(() => useBattery({ onChange: undefined }))
-      
+
       await waitFor(() => {
         expect(result.current.supported).toBe(true)
       })
-      
+
       mockBattery.level = 0.7
-      
+
       expect(() => {
         act(() => {
-          listeners.levelchange.forEach(listener => listener())
+          listeners.levelchange.forEach((listener) => listener())
         })
       }).not.toThrow()
     })
@@ -297,9 +309,9 @@ describe('useBattery', () => {
       mockBattery.charging = false
       mockBattery.chargingTime = Infinity
       mockBattery.dischargingTime = Infinity
-      
+
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.level).toBe(1.0)
         expect(result.current.chargingTime).toBe(Infinity)
@@ -310,9 +322,9 @@ describe('useBattery', () => {
       mockBattery.level = 0.0
       mockBattery.charging = false
       mockBattery.dischargingTime = 0
-      
+
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.level).toBe(0.0)
         expect(result.current.dischargingTime).toBe(0)
@@ -324,9 +336,9 @@ describe('useBattery', () => {
       mockBattery.charging = true
       mockBattery.chargingTime = 3600
       mockBattery.dischargingTime = Infinity
-      
+
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(result.current.charging).toBe(true)
         expect(result.current.chargingTime).toBe(3600)
@@ -337,24 +349,23 @@ describe('useBattery', () => {
     it('should handle onChange callback updates', async () => {
       const onChange1 = jest.fn()
       const onChange2 = jest.fn()
-      
-      const { rerender } = renderHook(
-        ({ onChange }) => useBattery({ onChange }),
-        { initialProps: { onChange: onChange1 } }
-      )
-      
+
+      const { rerender } = renderHook(({ onChange }) => useBattery({ onChange }), {
+        initialProps: { onChange: onChange1 },
+      })
+
       await waitFor(() => {
         expect(onChange1).toHaveBeenCalled()
       })
-      
+
       rerender({ onChange: onChange2 })
-      
+
       mockBattery.level = 0.4
-      
+
       act(() => {
-        listeners.levelchange.forEach(listener => listener())
+        listeners.levelchange.forEach((listener) => listener())
       })
-      
+
       await waitFor(() => {
         expect(onChange2).toHaveBeenCalled()
       })
@@ -363,22 +374,22 @@ describe('useBattery', () => {
     it('should not update after unmount', async () => {
       const onChange = jest.fn()
       const { unmount } = renderHook(() => useBattery({ onChange }))
-      
+
       await waitFor(() => {
         expect(onChange).toHaveBeenCalled()
       })
-      
+
       const callCount = onChange.mock.calls.length
-      
+
       unmount()
-      
+
       // Try to trigger changes after unmount
       mockBattery.level = 0.3
-      
+
       act(() => {
-        listeners.levelchange.forEach(listener => listener())
+        listeners.levelchange.forEach((listener) => listener())
       })
-      
+
       // onChange should not be called again
       expect(onChange).toHaveBeenCalledTimes(callCount)
     })
@@ -387,7 +398,7 @@ describe('useBattery', () => {
   describe('TypeScript Types', () => {
     it('should have correct return type structure', async () => {
       const { result } = renderHook(() => useBattery())
-      
+
       await waitFor(() => {
         expect(typeof result.current.level).toBe('number')
         expect(typeof result.current.charging).toBe('boolean')
@@ -398,4 +409,3 @@ describe('useBattery', () => {
     })
   })
 })
-

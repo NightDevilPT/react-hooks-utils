@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import type { UseIdleOptions } from '../interface'
+import type { IIdleOptions } from '../interface'
 
 /**
  * Detects user inactivity after a specified timeout
- * 
+ *
  * @param {number} timeout - Idle timeout in milliseconds
- * @param {UseIdleOptions} options - Optional configuration
+ * @param {IIdleOptions} options - Optional configuration
  * @returns {boolean} True if user is idle, false if active
- * 
+ *
  * @example
  * ```tsx
  * function App() {
  *   const isIdle = useIdle(300000) // 5 minutes
- *   
+ *
  *   useEffect(() => {
  *     if (isIdle) {
  *       console.log('User is idle - pausing operations')
@@ -20,13 +20,10 @@ import type { UseIdleOptions } from '../interface'
  *   }, [isIdle])
  * }
  * ```
- * 
+ *
  * @see https://github.com/yourusername/react-hookify#useidle
  */
-export function useIdle(
-  timeout: number,
-  options?: UseIdleOptions
-): boolean {
+export function useIdle(timeout: number, options?: IIdleOptions): boolean {
   const {
     events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'],
     initialState = false,
@@ -99,4 +96,3 @@ export function useIdle(
 
   return isIdle
 }
-

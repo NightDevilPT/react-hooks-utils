@@ -156,9 +156,7 @@ describe('useDeviceDetect', () => {
   describe('Options', () => {
     test('should accept custom userAgent', () => {
       const customUA = 'Custom User Agent String'
-      const { result } = renderHook(() =>
-        useDeviceDetect({ userAgent: customUA })
-      )
+      const { result } = renderHook(() => useDeviceDetect({ userAgent: customUA }))
 
       expect(result.current.userAgent).toBe(customUA)
     })
@@ -204,10 +202,9 @@ describe('useDeviceDetect', () => {
 
   describe('Memoization', () => {
     test('should memoize result for same options', () => {
-      const { result, rerender } = renderHook(
-        ({ ua }) => useDeviceDetect({ userAgent: ua }),
-        { initialProps: { ua: 'test-ua' } }
-      )
+      const { result, rerender } = renderHook(({ ua }) => useDeviceDetect({ userAgent: ua }), {
+        initialProps: { ua: 'test-ua' },
+      })
 
       const firstResult = result.current
 
@@ -217,10 +214,9 @@ describe('useDeviceDetect', () => {
     })
 
     test('should recalculate when options change', () => {
-      const { result, rerender } = renderHook(
-        ({ ua }) => useDeviceDetect({ userAgent: ua }),
-        { initialProps: { ua: 'Mozilla/5.0 (Windows NT 10.0)' } }
-      )
+      const { result, rerender } = renderHook(({ ua }) => useDeviceDetect({ userAgent: ua }), {
+        initialProps: { ua: 'Mozilla/5.0 (Windows NT 10.0)' },
+      })
 
       const firstResult = result.current
 
@@ -249,4 +245,3 @@ describe('useDeviceDetect', () => {
     })
   })
 })
-

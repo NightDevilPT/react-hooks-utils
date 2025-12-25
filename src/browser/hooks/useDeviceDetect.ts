@@ -1,28 +1,28 @@
 import { useMemo } from 'react'
-import type { DeviceDetectResult, UseDeviceDetectOptions } from '../interface'
+import type { IDeviceDetect, IDeviceDetectOptions } from '../interface'
 
 /**
  * Detects device type and operating system
- * 
- * @template DeviceDetectResult
- * @param {UseDeviceDetectOptions} options - Optional configuration
- * @returns {DeviceDetectResult} Device detection result
- * 
+ *
+ * @template IDeviceDetect
+ * @param {IDeviceDetectOptions} options - Optional configuration
+ * @returns {IDeviceDetect} Device detection result
+ *
  * @example
  * ```tsx
  * function App() {
  *   const { isMobile, isIOS, isAndroid } = useDeviceDetect()
- *   
+ *
  *   if (isMobile) {
  *     return <MobileLayout />
  *   }
  *   return <DesktopLayout />
  * }
  * ```
- * 
+ *
  * @see https://github.com/yourusername/react-hookify#usedevicedetect
  */
-export function useDeviceDetect(options?: UseDeviceDetectOptions): DeviceDetectResult {
+export function useDeviceDetect(options?: IDeviceDetectOptions): IDeviceDetect {
   const { userAgent: customUserAgent, ssrMode = false } = options || {}
 
   const deviceInfo = useMemo(() => {
@@ -53,7 +53,7 @@ export function useDeviceDetect(options?: UseDeviceDetectOptions): DeviceDetectR
 /**
  * Default device info for SSR
  */
-function getDefaultDeviceInfo(): DeviceDetectResult {
+function getDefaultDeviceInfo(): IDeviceDetect {
   return {
     isMobile: false,
     isTablet: false,
@@ -71,7 +71,7 @@ function getDefaultDeviceInfo(): DeviceDetectResult {
 /**
  * Detect device from user agent string
  */
-function detectDevice(userAgent: string): DeviceDetectResult {
+function detectDevice(userAgent: string): IDeviceDetect {
   const ua = userAgent.toLowerCase()
 
   // Mobile detection
@@ -105,5 +105,3 @@ function detectDevice(userAgent: string): DeviceDetectResult {
     userAgent,
   }
 }
-
-

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
-import type { GeolocationState, GeolocationCoordinates, UseGeolocationOptions } from '../interface'
+import type { IGeolocation, IGeolocationCoordinates, IGeolocationOptions } from '../interface'
 
 /**
  * Access user's geolocation with permission handling
- * 
- * @param {UseGeolocationOptions} options - Optional configuration
- * @returns {GeolocationState} Geolocation state with coordinates, loading, and error
+ *
+ * @param {IGeolocationOptions} options - Optional configuration
+ * @returns {IGeolocation} Geolocation state with coordinates, loading, and error
  */
-export function useGeolocation(options?: UseGeolocationOptions): GeolocationState {
+export function useGeolocation(options?: IGeolocationOptions): IGeolocation {
   const {
     enabled = false,
     watch = false,
@@ -18,7 +18,7 @@ export function useGeolocation(options?: UseGeolocationOptions): GeolocationStat
     onError,
   } = options || {}
 
-  const [state, setState] = useState<GeolocationState>({
+  const [state, setState] = useState<IGeolocation>({
     loading: false,
     error: null,
     coordinates: null,
@@ -56,10 +56,10 @@ export function useGeolocation(options?: UseGeolocationOptions): GeolocationStat
     }
 
     // Set loading state when request starts
-    setState(prev => ({ ...prev, loading: true, error: null }))
+    setState((prev) => ({ ...prev, loading: true, error: null }))
 
     const handleSuccess = (position: GeolocationPosition) => {
-      const coordinates: GeolocationCoordinates = {
+      const coordinates: IGeolocationCoordinates = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
         accuracy: position.coords.accuracy,
@@ -81,14 +81,16 @@ export function useGeolocation(options?: UseGeolocationOptions): GeolocationStat
     const handleError = (error: GeolocationPositionError) => {
       // Improve error messages for common issues
       let errorMessage = error.message
-      
+
       // Handle network location provider errors (403, etc.)
       if (error.message.includes('403') || error.message.includes('Network location provider')) {
-        errorMessage = 'Network location service unavailable. Please check your internet connection or enable GPS.'
+        errorMessage =
+          'Network location service unavailable. Please check your internet connection or enable GPS.'
       } else if (error.message.includes('timeout') || error.code === 3) {
         errorMessage = 'Location request timed out. Please try again.'
       } else if (error.code === 1) {
-        errorMessage = 'Location permission denied. Please enable location access in your browser settings.'
+        errorMessage =
+          'Location permission denied. Please enable location access in your browser settings.'
       } else if (error.code === 2) {
         errorMessage = 'Location unavailable. Please check your device location settings.'
       }
@@ -123,11 +125,7 @@ export function useGeolocation(options?: UseGeolocationOptions): GeolocationStat
         )
       } else {
         // Get position once
-        navigator.geolocation.getCurrentPosition(
-          handleSuccess,
-          handleError,
-          positionOptions
-        )
+        navigator.geolocation.getCurrentPosition(handleSuccess, handleError, positionOptions)
       }
 
       // Cleanup
@@ -156,4 +154,3 @@ export function useGeolocation(options?: UseGeolocationOptions): GeolocationStat
 
   return state
 }
-

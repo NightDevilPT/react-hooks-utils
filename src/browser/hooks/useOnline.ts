@@ -1,35 +1,35 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { UseOnlineOptions } from '../interface'
+import type { IOnlineOptions } from '../interface'
 
 /**
  * Detects online/offline network status
- * 
- * @param {UseOnlineOptions} options - Optional configuration
+ *
+ * @param {IOnlineOptions} options - Optional configuration
  * @returns {boolean} True if online, false if offline
- * 
+ *
  * @example
  * ```tsx
  * function App() {
  *   const isOnline = useOnline()
- *   
+ *
  *   if (!isOnline) {
  *     return <div>You are offline</div>
  *   }
  *   return <div>You are online</div>
  * }
  * ```
- * 
+ *
  * @see https://github.com/yourusername/react-hookify#useonline
  */
-export function useOnline(options?: UseOnlineOptions): boolean {
+export function useOnline(options?: IOnlineOptions): boolean {
   const { onChange } = options || {}
-  
+
   // SSR-safe initialization
   const [isOnline, setIsOnline] = useState<boolean>(() => {
     if (typeof window === 'undefined' || typeof navigator === 'undefined') {
       return true // Default to online during SSR
     }
-    
+
     try {
       return navigator.onLine ?? true // Default to true if undefined
     } catch (error) {
@@ -40,7 +40,7 @@ export function useOnline(options?: UseOnlineOptions): boolean {
 
   // Store onChange callback in ref to avoid effect re-runs
   const onChangeRef = useRef(onChange)
-  
+
   useEffect(() => {
     onChangeRef.current = onChange
   }, [onChange])
@@ -79,4 +79,3 @@ export function useOnline(options?: UseOnlineOptions): boolean {
 
   return isOnline
 }
-

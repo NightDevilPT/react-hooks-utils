@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
-import type { BatteryStatus, UseBatteryOptions } from '../interface'
+import type { IBattery, IBatteryOptions } from '../interface'
 
 /**
  * Monitors device battery status
- * 
- * @param {UseBatteryOptions} options - Optional configuration
- * @returns {BatteryStatus} Battery status information
+ *
+ * @param {IBatteryOptions} options - Optional configuration
+ * @returns {IBattery} Battery status information
  */
-export function useBattery(options?: UseBatteryOptions): BatteryStatus {
+export function useBattery(options?: IBatteryOptions): IBattery {
   const { onChange } = options || {}
-  
-  const [batteryStatus, setBatteryStatus] = useState<BatteryStatus>({
+
+  const [batteryStatus, setBatteryStatus] = useState<IBattery>({
     level: 1,
     charging: false,
     chargingTime: Infinity,
@@ -19,8 +19,9 @@ export function useBattery(options?: UseBatteryOptions): BatteryStatus {
   })
 
   const onChangeRef = useRef(onChange)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const batteryRef = useRef<any>(null)
-  
+
   useEffect(() => {
     onChangeRef.current = onChange
   }, [onChange])
@@ -33,14 +34,16 @@ export function useBattery(options?: UseBatteryOptions): BatteryStatus {
 
     let mounted = true
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateBatteryStatus = (battery: any) => {
       if (!mounted || !battery) return
 
-      const newStatus: BatteryStatus = {
+      const newStatus: IBattery = {
         level: typeof battery.level === 'number' ? battery.level : 1,
         charging: typeof battery.charging === 'boolean' ? battery.charging : false,
         chargingTime: typeof battery.chargingTime === 'number' ? battery.chargingTime : Infinity,
-        dischargingTime: typeof battery.dischargingTime === 'number' ? battery.dischargingTime : Infinity,
+        dischargingTime:
+          typeof battery.dischargingTime === 'number' ? battery.dischargingTime : Infinity,
         supported: true,
       }
 
@@ -52,7 +55,7 @@ export function useBattery(options?: UseBatteryOptions): BatteryStatus {
       try {
         // @ts-ignore - getBattery is not in TypeScript lib yet
         const battery = await navigator.getBattery()
-        
+
         // Validate battery object
         if (!battery || typeof battery !== 'object') {
           throw new Error('Invalid battery object')
@@ -102,10 +105,9 @@ export function useBattery(options?: UseBatteryOptions): BatteryStatus {
 
     return () => {
       mounted = false
-      cleanup.then(cleanupFn => cleanupFn?.())
+      cleanup.then((cleanupFn) => cleanupFn?.())
     }
   }, [])
 
   return batteryStatus
 }
-

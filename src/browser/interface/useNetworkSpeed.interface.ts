@@ -6,22 +6,22 @@ export type ConnectionType = 'slow-2g' | '2g' | '3g' | '4g' | 'unknown'
 /**
  * Network speed information
  */
-export interface NetworkSpeedInfo {
+export interface INetworkSpeed {
   /**
    * Effective connection type
    */
   effectiveType: ConnectionType
-  
+
   /**
    * Downlink speed in Mbps
    */
   downlink: number
-  
+
   /**
    * Round-trip time in milliseconds
    */
   rtt: number
-  
+
   /**
    * Whether data saver mode is enabled
    */
@@ -31,10 +31,9 @@ export interface NetworkSpeedInfo {
 /**
  * Options for useNetworkSpeed hook
  */
-export interface UseNetworkSpeedOptions {
+export interface INetworkSpeedOptions {
   /**
    * Callback when network speed changes
    */
-  onChange?: (info: NetworkSpeedInfo) => void
+  onChange?: (info: INetworkSpeed) => void
 }
-

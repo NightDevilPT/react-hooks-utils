@@ -1,19 +1,19 @@
 import { useState, useEffect, useRef } from 'react'
-import type { UseMediaQueryOptions } from '../interface'
+import type { IMediaQueryOptions } from '../interface'
 
 /**
  * Listens to CSS media queries and returns match status
- * 
+ *
  * @param {string} query - CSS media query string
- * @param {UseMediaQueryOptions} options - Optional configuration
+ * @param {IMediaQueryOptions} options - Optional configuration
  * @returns {boolean} True if media query matches, false otherwise
- * 
+ *
  * @example
  * ```tsx
  * function App() {
  *   const isMobile = useMediaQuery('(max-width: 768px)')
  *   const isDark = useMediaQuery('(prefers-color-scheme: dark)')
- *   
+ *
  *   return (
  *     <div>
  *       {isMobile ? <MobileNav /> : <DesktopNav />}
@@ -21,29 +21,26 @@ import type { UseMediaQueryOptions } from '../interface'
  *   )
  * }
  * ```
- * 
+ *
  * @see https://github.com/yourusername/react-hookify#usemediaquery
  */
-export function useMediaQuery(
-  query: string,
-  options?: UseMediaQueryOptions
-): boolean {
+export function useMediaQuery(query: string, options?: IMediaQueryOptions): boolean {
   const { defaultValue = false, onChange } = options || {}
-  
+
   // Initialize with default value for SSR, or actual value in browser
   const [matches, setMatches] = useState<boolean>(() => {
     if (typeof window === 'undefined' || !window.matchMedia) {
       return defaultValue
     }
-    
+
     try {
       const mediaQuery = window.matchMedia(query)
       return mediaQuery.matches
-    } catch (error) {
+    } catch {
       return defaultValue
     }
   })
-  
+
   const onChangeRef = useRef(onChange)
 
   // Update onChange ref
@@ -96,4 +93,3 @@ export function useMediaQuery(
 
   return matches
 }
-

@@ -1,10 +1,9 @@
 /**
  * Options for useOnline hook
  */
-export interface UseOnlineOptions {
+export interface IOnlineOptions {
   /**
    * Callback when online status changes
    */
   onChange?: (isOnline: boolean) => void
 }
-
