@@ -1,6 +1,6 @@
 {
   "name": "react-hooks-core",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Production-ready React hooks library with TypeScript and SSR support",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -15,6 +15,11 @@
       "types": "./dist/browser/index.d.ts",
       "import": "./dist/browser/index.mjs",
       "require": "./dist/browser/index.js"
+    },
+    "./storage": {
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.mjs",
+      "require": "./dist/storage/index.js"
     }
   },
   "files": [

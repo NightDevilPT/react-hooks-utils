@@ -175,7 +175,7 @@ We're actively expanding React Hooks Core with more production-ready hooks acros
 
 - **Timer & Interval Hooks** - `useInterval`, `useTimeout`, `useCountdown`, `useDebounce`, `useThrottle`
 - **UI & DOM Hooks** - `useClickOutside`, `useElementSize`, `useWindowSize`, `useScrollPosition`, `useHover`
-- **Storage Hooks** - `useLocalStorage`, `useSessionStorage`, `useCookie`, `usePersistedState`
+- **Storage Hooks** - `useStorage`
 - **Context & Providers** - Global state management and configuration providers
 
 ### 🎯 Our Commitment

@@ -24,3 +24,8 @@ export type {
   IBattery,
   IBatteryOptions,
 } from './browser'
+
+// Export storage feature
+export { useStorage } from './storage'
+
+export type { StorageType, StorageValue, IUseStorageOptions, IUseStorageReturn } from './storage'
